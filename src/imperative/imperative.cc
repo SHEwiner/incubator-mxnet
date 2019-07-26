@@ -25,11 +25,11 @@ namespace mxnet {
 #if DMLC_CXX11_THREAD_LOCAL
 thread_local bool Imperative::is_train_ = false;
 thread_local bool Imperative::is_recording_ = false;
-thread_local bool Imperative::is_np_comp_ = false;
+thread_local bool Imperative::is_np_shape_ = false;
 #else
 MX_THREAD_LOCAL bool Imperative::is_train_ = false;
 MX_THREAD_LOCAL bool Imperative::is_recording_ = false;
-MX_THREAD_LOCAL bool Imperative::is_np_comp_ = false;
+MX_THREAD_LOCAL bool Imperative::is_np_shape_ = false;
 #endif
 
 Imperative* Imperative::Get() {
@@ -499,6 +499,10 @@ std::vector<NDArray*> Imperative::Backward(
                                shapes[eid], vctx[i], true, dtypes[eid]);
       }
     }
+  }
+
+  if (dmlc::GetEnv("MXNET_MEM_PLAN_VERBOSE_LOGGING", false)) {
+    common::LogMemoryPlan(graph);
   }
 
   // Execution
